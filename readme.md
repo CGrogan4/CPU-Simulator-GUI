@@ -35,15 +35,20 @@ The steps I used to set up and run the CPU Simulator GUI project.
 
 **To work with this project, you must use Visual Studio 2022 on a Windows operating system following the steps outlined above.**
 
-##**Notable changes in this repository:**
-    * Two new scheduling algorithm methods were added for Highest Response Ratio Next (HRRN) and Multilevel Feedback Queue Scheduling             (MLFQ) scheduling support.
-    * The appropriate buttons and GUI components were added to support the usability for the new algorithms and colored light blue to be         distinctive
-    * Support for the other methods was added to test the following metrics:
-          *Average Waiting Time (AWT)
-          *Average Turnaround Time (ATT)
-          *CPU Utilization (%)
-          *Throughput (Processes per Second)
-          *Response Time (RT) [Optional]
+## Notable Changes in This Repository:
+
+* **Two new scheduling algorithm methods have been added:**
+    * Highest Response Ratio Next (HRRN) scheduling support.
+    * Multilevel Feedback Queue Scheduling (MLFQ) scheduling support.
+* **GUI Enhancements:**
+    * Appropriate buttons and user interface components have been added to support the usability of the new algorithms.
+    * These new elements are colored light blue to visually distinguish them from existing components.
+* **Enhanced Performance Metric Tracking:** Support has been added to test and display the following key performance metrics for all implemented scheduling algorithms:
+    * **Average Waiting Time (AWT)**
+    * **Average Turnaround Time (ATT)**
+    * **CPU Utilization (%)**
+    * **Throughput (Processes per Second)**
+    * **Response Time (RT) [Optional]**
 
 
 ##**Original Read Me Notes:**
