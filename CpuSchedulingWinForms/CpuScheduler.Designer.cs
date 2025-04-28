@@ -1,4 +1,6 @@
-﻿namespace CpuSchedulingWinForms
+using System;
+
+namespace CpuSchedulingWinForms
 {
     partial class CpuScheduler
     {
@@ -74,6 +76,7 @@
             this.productTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCodeOutput)).BeginInit();
             this.SuspendLayout();
+
             // 
             // panel1
             // 
@@ -362,6 +365,7 @@
             // 
             // btnPriority
             // 
+            this.btnPriority.Click += new System.EventHandler(this.btnPriority_Click);
             this.btnPriority.BackColor = System.Drawing.Color.Bisque;
             this.btnPriority.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPriority.FlatAppearance.MouseOverBackColor = System.Drawing.Color.PaleGreen;
@@ -377,7 +381,6 @@
             this.btnPriority.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnPriority.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnPriority.UseVisualStyleBackColor = false;
-            this.btnPriority.Click += new System.EventHandler(this.btnPriority_Click);
             // 
             // btnSJF
             // 
@@ -550,10 +553,57 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxCodeOutput)).EndInit();
             this.ResumeLayout(false);
 
+
+            //HRRN 
+            // Add the HRRN button
+            this.btnHRRN = new System.Windows.Forms.Button();
+            this.btnHRRN.BackColor = System.Drawing.Color.LightBlue;
+            this.btnHRRN.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnHRRN.FlatAppearance.MouseOverBackColor = System.Drawing.Color.PaleGreen;
+            this.btnHRRN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHRRN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHRRN.Image = ((System.Drawing.Image)(resources.GetObject("btnHRRN.Image"))); // Ensure the image resource exists
+            this.btnHRRN.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnHRRN.Location = new System.Drawing.Point(16, 330); // Adjust location as needed
+            this.btnHRRN.Name = "btnHRRN";
+            this.btnHRRN.Size = new System.Drawing.Size(120, 45); // Adjust size as needed
+            this.btnHRRN.TabIndex = 13;
+            this.btnHRRN.Text = "HRRN";
+            this.btnHRRN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnHRRN.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnHRRN.UseVisualStyleBackColor = false;
+            this.btnHRRN.Click += new System.EventHandler(this.btnHRRN_Click);
+
+            // Add the HRRN button to the Controls collection of the cpuSchedulerTab
+            this.cpuSchedulerTab.Controls.Add(this.btnHRRN);
+
+            // MLFQ
+            this.btnMLFQ = new System.Windows.Forms.Button();
+            this.btnMLFQ.BackColor = System.Drawing.Color.LightBlue;
+            this.btnMLFQ.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnMLFQ.FlatAppearance.MouseOverBackColor = System.Drawing.Color.PaleGreen;
+            this.btnMLFQ.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMLFQ.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMLFQ.Image = ((System.Drawing.Image)(resources.GetObject("btnMLFQ.Image"))); // Ensure the image resource exists
+            this.btnMLFQ.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnMLFQ.Location = new System.Drawing.Point(150, 330); // Adjust location as needed
+            this.btnMLFQ.Name = "btnMLFQ";
+            this.btnMLFQ.Size = new System.Drawing.Size(120, 45); // Adjust size as needed
+            this.btnMLFQ.TabIndex = 14;
+            this.btnMLFQ.Text = "MLFQ";
+            this.btnMLFQ.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnMLFQ.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnMLFQ.UseVisualStyleBackColor = false;
+            this.btnMLFQ.Click += new System.EventHandler(this.btnMLFQ_Click);
+
+            // Add the MLFQ button to the Controls collection of the cpuSchedulerTab
+            this.cpuSchedulerTab.Controls.Add(this.btnMLFQ);
+
         }
 
-        #endregion
+       
 
+      
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnCpuScheduler;
         private System.Windows.Forms.Button btnDashBoard;
@@ -588,4 +638,5 @@
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.Timer timer1;
     }
+    #endregion // Add this directive to close the #region block for "Windows Form Designer generated code"
 }
