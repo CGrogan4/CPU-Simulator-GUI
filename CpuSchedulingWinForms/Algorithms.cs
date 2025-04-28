@@ -1,73 +1,112 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+//Add a process class to track performance data
+public class Process
+{
+    public int ID { get; set; }
+    public int ArrivalTime { get; set; }
+    public int BurstTime { get; set; }
+    public int Priority { get; set; }
+
+ //scheduling results:
+    public int RemainingTime { get; set; }   
+    public double StartTime { get; set; }     
+    public double FinishTime { get; set; }    
+    public double WaitingTime { get; set; }   
+    public double TurnaroundTime { get; set; } 
+    public double ResponseTime { get; set; }
+    public int TimeSlice { get; set; }
+    public double AvgWaitingTime { get; set; }
+    public double AvgTurnaroundTime { get; set; }
+    public double AvgResponseTime { get; set; }
+    public double CpuUtilization { get; set; }
+    public double Throughput { get; set; }
+    
+    //Create Process Class - represents processes in CPU scheduling
+    public Process(int id, int arrivalTime, int burstTime, int priority)
+    {
+        //Declare variables
+        ID = id;
+        ArrivalTime = arrivalTime;
+        BurstTime = burstTime;
+        Priority = priority;//used in priority scheduling
+        RemainingTime = burstTime; //At start, remaining time = burst time
+
+        // Initialize fields to 0
+        StartTime = 0;
+        FinishTime = 0;
+        WaitingTime = 0;
+        TurnaroundTime = 0;
+        TimeSlice = 0;
+
+    }
+}
+
 namespace CpuSchedulingWinForms
 {
+    //Class for algorithms
     public static class Algorithms
     {
+        //First Come First Served 
         public static void fcfsAlgorithm(string userInput)
         {
-            int np = Convert.ToInt16(userInput);
-            int npX2 = np * 2;
+            // Parse the input string to extract process details
+            string[] processEntries = userInput.Split(';');
+            int np = processEntries.Length; // Number of processes
 
-            double[] bp = new double[np];
-            double[] wtp = new double[np];
-            string[] output1 = new string[npX2];
-            double twt = 0.0, awt; 
-            int num;
+            double[] bp = new double[np]; // Burst times
+            double[] wtp = new double[np]; // Waiting times
+            double twt = 0.0, awt; // Total and average waiting time
 
-            DialogResult result = MessageBox.Show("First Come First Serve Scheduling ", "", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-            if (result == DialogResult.Yes)
+            // Parse burst times from the input
+            for (int i = 0; i < np; i++)
             {
-                for (num = 0; num <= np - 1; num++)
+                string[] processDetails = processEntries[i].Split(',');
+                if (processDetails.Length < 3)
                 {
-                    //MessageBox.Show("Enter Burst time for P" + (num + 1) + ":", "Burst time for Process", MessageBoxButtons.OK, MessageBoxIcon.Question);
-                    //Console.WriteLine("\nEnter Burst time for P" + (num + 1) + ":");
-
-                    string input =
-                    Microsoft.VisualBasic.Interaction.InputBox("Enter Burst time: ",
-                                                       "Burst time for P" + (num + 1),
-                                                       "",
-                                                       -1, -1);
-
-                    bp[num] = Convert.ToInt64(input);
-
-                    //var input = Console.ReadLine();
-                    //bp[num] = Convert.ToInt32(input);
+                    MessageBox.Show("Invalid input format for process data.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
-                for (num = 0; num <= np - 1; num++)
+                // Extract burst time (3rd value in each process entry)
+                if (!double.TryParse(processDetails[2], out bp[i]))
                 {
-                    if (num == 0)
-                    {
-                        wtp[num] = 0;
-                    }
-                    else
-                    {
-                        wtp[num] = wtp[num - 1] + bp[num - 1];
-                        MessageBox.Show("Waiting time for P" + (num + 1) + " = " + wtp[num], "Job Queue", MessageBoxButtons.OK, MessageBoxIcon.None);
-                    }
+                    MessageBox.Show($"Invalid burst time for process {i + 1}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
-                for (num = 0; num <= np - 1; num++)
-                {
-                    twt = twt + wtp[num];
-                }
-                awt = twt / np;
-                MessageBox.Show("Average waiting time for " + np + " processes" + " = " + awt + " sec(s)", "Average Awaiting Time", MessageBoxButtons.OK, MessageBoxIcon.None);
             }
-            else if (result == DialogResult.No)
+
+            // Calculate waiting times
+            for (int i = 0; i < np; i++)
             {
-                //this.Hide();
-                //Form1 frm = new Form1();
-                //frm.ShowDialog();
+                if (i == 0)
+                {
+                    wtp[i] = 0; // First process has no waiting time
+                }
+                else
+                {
+                    wtp[i] = wtp[i - 1] + bp[i - 1];
+                }
+                MessageBox.Show($"Waiting time for P{i + 1} = {wtp[i]}", "Job Queue", MessageBoxButtons.OK, MessageBoxIcon.None);
             }
+
+            // Calculate total and average waiting time
+            for (int i = 0; i < np; i++)
+            {
+                twt += wtp[i];
+            }
+            awt = twt / np;
+
+            // Display average waiting time
+            MessageBox.Show($"Average waiting time for {np} processes = {awt} sec(s)", "Average Waiting Time", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        //Shortest Job First
         public static void sjfAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
@@ -151,6 +190,7 @@ namespace CpuSchedulingWinForms
             }
         }
 
+        //Priority Algorithm
         public static void priorityAlgorithm(string userInput)
         {
             int np = Convert.ToInt16(userInput);
@@ -253,7 +293,8 @@ namespace CpuSchedulingWinForms
             }
         }
 
-        public static void roundRobinAlgorithm(string userInput)
+        //Round Robin
+        public static void roundRobinAlgorithm(List<Process> processes, string userInput)
         {
             int np = Convert.ToInt16(userInput);
             int i, counter = 0;
@@ -314,7 +355,7 @@ namespace CpuSchedulingWinForms
                     if (temp[i] == 0 && counter == 1)
                     {
                         x--;
-                        //printf("nProcess[%d]tt%dtt %dttt %d", i + 1, burst_time[i], total - arrival_time[i], total - arrival_time[i] - burst_time[i]);
+                       
                         MessageBox.Show("Turnaround time for Process " + (i + 1) + " : " + (total - arrivalTime[i]), "Turnaround time for Process " + (i + 1), MessageBoxButtons.OK);
                         MessageBox.Show("Wait time for Process " + (i + 1) + " : " + (total - arrivalTime[i] - burstTime[i]), "Wait time for Process " + (i + 1), MessageBoxButtons.OK);
                         turnaroundTime = (turnaroundTime + total - arrivalTime[i]);
@@ -340,6 +381,241 @@ namespace CpuSchedulingWinForms
                 MessageBox.Show("Average turnaround time for " + np + " processes: " + averageTurnaroundTime + " sec(s)", "", MessageBoxButtons.OK);
             }
         }
+
+
+        //Additional ALgorithms
+
+        //First Algorithm - Highest Response Ratio Next
+        public static void hrrnAlgorithm(List<Process> processes)
+        {
+            int currentTime = 0;
+            int completed = 0;
+            int n = processes.Count;
+            List<Process> readyQueue = new List<Process>();
+
+            // To track the total times for calculations
+            double totalWaitingTime = 0;
+            double totalTurnaroundTime = 0;
+            double totalResponseTime = 0;
+            double totalCPUTime = 0;
+            double totalIdleTime = 0;
+
+            while (completed < n)
+            {
+                // Add processes that have arrived by current time to the ready queue
+                foreach (var process in processes)
+                {
+                    if (process.ArrivalTime <= currentTime && !readyQueue.Contains(process) && process.FinishTime == 0)
+                    {
+                        readyQueue.Add(process);
+                    }
+                }
+
+                if (readyQueue.Count == 0)
+                {
+                    // No process is ready, move time forward
+                    currentTime++;
+                    totalIdleTime++;  // Increment idle time
+                    continue;
+                }
+
+                // Calculate Response Ratio = (Waiting Time + Burst Time) / Burst Time
+                foreach (var process in readyQueue)
+                {
+                    process.WaitingTime = currentTime - process.ArrivalTime;
+                }
+
+                var nextProcess = readyQueue
+                    .OrderByDescending(p => ((p.WaitingTime + p.BurstTime) / (double)p.BurstTime))
+                    .First();
+
+                // Set StartTime only if it hasn't been set before
+                nextProcess.StartTime = currentTime;
+
+                // Move time forward based on burst time
+                currentTime += nextProcess.BurstTime;
+                nextProcess.FinishTime = currentTime;
+
+                // Calculate Turnaround Time and Waiting Time
+                nextProcess.TurnaroundTime = nextProcess.FinishTime - nextProcess.ArrivalTime;
+                nextProcess.WaitingTime = nextProcess.TurnaroundTime - nextProcess.BurstTime;
+
+                // Calculate Response Time
+                nextProcess.ResponseTime = nextProcess.StartTime - nextProcess.ArrivalTime;
+
+                // Update totals for the metrics
+                totalWaitingTime += nextProcess.WaitingTime;
+                totalTurnaroundTime += nextProcess.TurnaroundTime;
+                totalResponseTime += nextProcess.ResponseTime;
+                totalCPUTime += nextProcess.BurstTime;
+
+                // Mark as completed
+                completed++;
+                readyQueue.Remove(nextProcess);
+            }
+
+            // Calculate average metrics
+            double avgWaitingTime = totalWaitingTime / n;
+            double avgTurnaroundTime = totalTurnaroundTime / n;
+            double avgResponseTime = totalResponseTime / n;
+
+            // Calculate CPU Utilization
+            double cpuUtilization = (totalCPUTime / (totalCPUTime + totalIdleTime)) * 100;
+
+            // Calculate Throughput
+            double throughput = (double)n / (totalCPUTime + totalIdleTime);
+
+            // Display results
+            Console.WriteLine("\nHRRN Scheduling Results:");
+            Console.WriteLine("ID\tArrival\tBurst\tStart\tFinish\tWaiting\tTurnaround\tResponse");
+            foreach (var p in processes)
+            {
+                Console.WriteLine($"{p.ID}\t{p.ArrivalTime}\t{p.BurstTime}\t{p.StartTime}\t{p.FinishTime}\t{p.WaitingTime}\t{p.TurnaroundTime}\t{p.ResponseTime}");
+            }
+
+            // Display additional metrics
+            Console.WriteLine($"\nAverage Waiting Time (AWT): {avgWaitingTime:F2} ms");
+            Console.WriteLine($"Average Turnaround Time (ATT): {avgTurnaroundTime:F2} ms");
+            Console.WriteLine($"Average Response Time (RT): {avgResponseTime:F2} ms");
+            Console.WriteLine($"CPU Utilization: {cpuUtilization:F2}%");
+            Console.WriteLine($"Throughput: {throughput:F4} processes/ms");
+        }
+
+
+
+        internal static void hrrnAlgorithm(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        // Second Algorithm - MLFQ [Multilevel Feedback Queue] CPU Scheduling Algorithm
+        public static void mlfqAlgorithm(List<Process> processes, int[] timeQuantums)
+        {
+            // Initialize queues based on the time quantums
+            Queue<Process>[] queues = new Queue<Process>[timeQuantums.Length];
+            for (int i = 0; i < queues.Length; i++)
+            {
+                queues[i] = new Queue<Process>();
+            }
+
+            int currentTime = 0;
+            int completed = 0;
+            int n = processes.Count;
+            double totalWaitingTime = 0;
+            double totalTurnaroundTime = 0;
+            double totalResponseTime = 0;
+            double totalCPUTime = 0;
+            double totalIdleTime = 0;
+
+            while (completed < n)
+            {
+                // Add processes that have arrived by current time to the first queue
+                foreach (var process in processes)
+                {
+                    if (process.ArrivalTime <= currentTime && !queues[0].Contains(process) && process.FinishTime == 0)
+                    {
+                        queues[0].Enqueue(process);
+                    }
+                }
+
+                bool processScheduled = false;
+
+                // Iterate through each queue, starting from highest priority (index 0) to lowest (index n-1)
+                for (int i = 0; i < queues.Length; i++)
+                {
+                    if (queues[i].Count > 0)
+                    {
+                        var currentQueue = queues[i];
+                        var currentProcess = currentQueue.Dequeue();
+
+                        // Set StartTime only if it hasn't been set before
+                        if (currentProcess.StartTime == 0)
+                        {
+                            currentProcess.StartTime = currentTime;
+                            totalResponseTime += currentProcess.StartTime - currentProcess.ArrivalTime; // Calculate Response Time
+                        }
+
+                        // Execute the process for the time quantum or until completion
+                        int executionTime = Math.Min(currentProcess.RemainingTime, timeQuantums[i]);
+                        currentProcess.RemainingTime -= executionTime;
+                        currentTime += executionTime;
+
+                        // If the process is completed
+                        if (currentProcess.RemainingTime == 0)
+                        {
+                            currentProcess.FinishTime = currentTime;
+                            completed++;
+                            currentProcess.TurnaroundTime = currentProcess.FinishTime - currentProcess.ArrivalTime;
+                            currentProcess.WaitingTime = currentProcess.TurnaroundTime - currentProcess.BurstTime;
+
+                            totalTurnaroundTime += currentProcess.TurnaroundTime;
+                            totalWaitingTime += currentProcess.WaitingTime;
+                            totalCPUTime += currentProcess.BurstTime;
+                        }
+                        else
+                        {
+                            // If not completed, move to the next queue or back to the same queue
+                            if (i < queues.Length - 1)
+                            {
+                                // Move to next lower-priority queue
+                                queues[i + 1].Enqueue(currentProcess);
+                            }
+                            else
+                            {
+                                // If in the lowest priority queue, stay in the same queue
+                                queues[i].Enqueue(currentProcess);
+                            }
+                        }
+
+                        processScheduled = true;
+                        break; // Move to the next process after scheduling one
+                    }
+                }
+
+                // If no process was scheduled in this cycle, increment currentTime to avoid infinite loop
+                if (!processScheduled)
+                {
+                    currentTime++;
+                    totalIdleTime++;
+                }
+            }
+
+            // Calculate metrics
+            double avgWaitingTime = totalWaitingTime / n;
+            double avgTurnaroundTime = totalTurnaroundTime / n;
+            double avgResponseTime = totalResponseTime / n;
+            double cpuUtilization = (totalCPUTime / (totalCPUTime + totalIdleTime)) * 100;
+            double throughput = n / (totalCPUTime + totalIdleTime);
+
+            // Display results
+            Console.WriteLine("\nMLFQ Scheduling Results:");
+            Console.WriteLine("ID\tArrival\tBurst\tStart\tFinish\tWaiting\tTurnaround\tResponse");
+            foreach (var p in processes)
+            {
+                Console.WriteLine($"{p.ID}\t{p.ArrivalTime}\t{p.BurstTime}\t{p.StartTime:F2}\t{p.FinishTime:F2}\t{p.WaitingTime:F2}\t{p.TurnaroundTime:F2}\t{p.ResponseTime:F2}");
+            }
+
+            // Display additional metrics
+            Console.WriteLine($"\nAverage Waiting Time (AWT): {avgWaitingTime:F2} ms");
+            Console.WriteLine($"Average Turnaround Time (ATT): {avgTurnaroundTime:F2} ms");
+            Console.WriteLine($"Average Response Time (RT): {avgResponseTime:F2} ms");
+            Console.WriteLine($"CPU Utilization: {cpuUtilization:F2}%");
+            Console.WriteLine($"Throughput: {throughput:F4} processes/ms");
+        }
+        internal static void mlfqAlgorithm(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static List<Process> GetProcesses()
+        {
+            throw new NotImplementedException();
+        }
+
+     
     }
 }
+
+                        
 
